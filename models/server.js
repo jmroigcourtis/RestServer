@@ -1,6 +1,7 @@
 const express = require('express')
 const CORS = require('cors')
-const { router }  = require('../routes/user')
+const { router }  = require('../routes/user');
+const { dbConnection } = require('../db/config');
 require('dotenv').config()
 class Server {
 
@@ -8,6 +9,8 @@ class Server {
         this.app = express();
         this.PORT = process.env.PORT;
         this.userRoutes = router;
+        // DB Connect.
+        this.connectDB();
         // Middlewares
         this.middleWares();
         this.routes();        
@@ -19,9 +22,17 @@ class Server {
         this.app.use(CORS())
         //Parse y lectura del body
         this.app.use(express.json())
-        
         this.app.use(express.static('public'));
 
+    }
+
+    async connectDB () {
+        try {
+            await dbConnection();
+        } catch (error) {
+            throw new Error ('Error')
+        }
+        
     }
 
     routes() {
